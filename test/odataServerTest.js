@@ -136,7 +136,6 @@ describe('odata server', function () {
       .expect(function (res) {
         res.body.should.not.have.property('0')
         res.body.test.should.be.eql('a')
-        Array.isArray(res.body.value).should.be.true()
       })
       .end(function (err, res) {
         done(err)
@@ -176,9 +175,9 @@ describe('odata server', function () {
       num: 1
     }
     odataServer.query(function (col, query, req, cb) {
-      cb(null, {
+      cb(null, [{
         num: 1
-      })
+      }])
     })
 
     odataServer.on('odata-error', done)
@@ -186,10 +185,12 @@ describe('odata server', function () {
       .get('/users($' + key + ')?$select=num')
       .expect(200)
       .expect(function (res) {
-        res.body.value.should.be.ok()
-        res.body['@odata.context'].should.be.eql('http://localhost:1234/$metadata#users(num)/$entity')
-        res.body.should.have.property('value')
-        res.body.value.should.be.eql(result)
+        const url = 'http://localhost:1234/$metadata#users(num)/$entity'
+        res.body.should.be.ok()
+        res.body.should.be.eql({
+          '@odata.context': url,
+          ...result
+        })
       })
       .end(function (err, res) {
         done(err)
@@ -242,9 +243,9 @@ describe('odata server', function () {
       .get("/users('foo')")
       .expect(200)
       .expect(function (res) {
-        res.body.value.should.be.ok()
-        res.body.value[0].should.have.property('test')
-        res.body.value[0].should.not.have.property('a')
+        res.body.should.be.ok()
+        res.body.should.have.property('test')
+        res.body.should.not.have.property('a')
       })
       .end(function (err, res) {
         done(err)
