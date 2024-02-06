@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 const should = require('should')
-const transform = require('../lib/queryTransform.js')
+const transform = require('../lib/routes/queryTransform.js')
 
 describe('transform', function () {
   it('$top to $limit', function () {
@@ -21,7 +21,7 @@ describe('transform', function () {
     }).$sort.test.should.be.eql(-1)
   })
 
-  it("Name eq 'John' and LastName lt 'Doe", function () {
+  it("Name eq 'John' and LastName lt 'Doe'", function () {
     const result = transform({
       $filter: {
         type: 'and',
@@ -56,7 +56,7 @@ describe('transform', function () {
     result.$filter.$and[1].LastName.$lt.should.be.eql('Doe')
   })
 
-  it("Name eq 'John' or LastName gt 'Doe", function () {
+  it("Name eq 'John' or LastName gt 'Doe'", function () {
     const result = transform({
       $filter: {
         type: 'or',

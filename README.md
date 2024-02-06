@@ -1,12 +1,9 @@
-⚠️ This repository isn't being maintained. It's stable and still used in [jsreport](https://github.com/jsreport/jsreport), but we are too busy to provide adequate maintenance. Don't hesitate to let me know if you plan to maintain a fork so I can share it here..
---
-
 # Node simple OData server
 [![NPM Version](http://img.shields.io/npm/v/simple-odata-server.svg?style=flat-square)](https://npmjs.com/package/simple-odata-server)
 [![License](http://img.shields.io/npm/l/simple-odata-server.svg?style=flat-square)](http://opensource.org/licenses/MIT)
-[![build status](https://github.com/pofider/node-simple-odata-server/actions/workflows/main.yml/badge.svg)](https://github.com/pofider/node-simple-odata-server/actions)
+[![build status](https://github.com/ranawaysuccessfully/node-simple-odata-server/actions/workflows/main.yml/badge.svg)](https://github.com/ranawaysuccessfully/node-simple-odata-server/actions)
 
-**Super simple implementation of OData server running on Node.js with easy adapters for mongodb and nedb.** Just define an OData model, provide a mongo or nedb database, hook into node.js http server and run. 
+**Super simple implementation of OData server running on Node.js with easy adapters for mongodb and lowdb.** Just define an OData model, provide a mongo or lowdb database, hook into node.js http server and run. 
 
 It supports basic operations you would expect like providing $metadata, filtering and also operations for insert, update and delete. On the other hand it suppose to be really simple so you don't get support for entity links, batch operations, atom feeds and many others. 
 
@@ -14,13 +11,19 @@ The implementation is tested with [.net OData client](https://github.com/object/
 
 ## Get started
 
-This is how you can create an OData server with node.js http module and nedb.
+This is how you can create an OData server with node.js http module and lowdb.
 ```js
 var http = require('http');
-var Datastore = require('nedb');
-var db = new Datastore( { inMemoryOnly: true });
+var { Low, Memory } = require('lowdb');
+var memoryDB = new Memory();
+var db = new Low(memoryDB);
 var ODataServer = require('simple-odata-server');
-var Adapter = require('simple-odata-server-nedb');
+var Adapter = require('simple-odata-server-lowdb');
+
+if (!db.data) {
+  db.data = {}
+  db.write()
+}
 
 var model = {
     namespace: "jsreport",
@@ -56,8 +59,8 @@ POST, PATCH, DELETE
 ## Adapters
 There are currently two adapters implemented. 
 
-- [mongodb](https://www.mongodb.com/) - [pofider/node-simple-odata-server-mongodb](https://github.com/pofider/node-simple-odata-server-mongodb)
-- [nedb](https://github.com/louischatriot/nedb) - [pofider/node-simple-odata-server-nedb](https://github.com/pofider/node-simple-odata-server-nedb)
+- [mongodb](https://www.mongodb.com/) - [ranawaysuccessfully/node-simple-odata-server-mongodb](https://github.com/ranawaysuccessfully/node-simple-odata-server-mongodb)
+- [lowdb](https://github.com/typicode/lowdb) - [ranawaysuccessfully/node-simple-odata-server-lowdb](https://github.com/ranawaysuccessfully/node-simple-odata-server-lowdb)
 
 The `mongo` adapter can be used as
 ```js
@@ -106,15 +109,14 @@ odataServer
 
 
 ## Contributions
-I will maintain this repository for a while because I use it in [jsreport](https://github.com/jsreport/jsreport). You are more than welcome to contribute with pull requests and add other basic operations you require. 
+You are more than welcome to contribute with pull requests and add other basic operations you require.
 
 ## Limitations
 - document ids must have name **_id**
 - no entity links
-- no batch operations
 - no validations
 - ... this would be a very long list, so rather check yourself
 
 ## License
-See [license](https://github.com/pofider/node-simple-odata-server/blob/master/LICENSE)
+See [license](https://github.com/ranawaysuccessfully/node-simple-odata-server/blob/master/LICENSE)
 

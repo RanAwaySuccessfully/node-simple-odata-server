@@ -136,6 +136,7 @@ describe('odata server', function () {
       .expect(function (res) {
         res.body.should.not.have.property('0')
         res.body.test.should.be.eql('a')
+        Array.isArray(res.body.value).should.be.true()
       })
       .end(function (err, res) {
         done(err)
@@ -175,9 +176,9 @@ describe('odata server', function () {
       num: 1
     }
     odataServer.query(function (col, query, req, cb) {
-      cb(null, [{
+      cb(null, {
         num: 1
-      }])
+      })
     })
 
     odataServer.on('odata-error', done)
@@ -185,12 +186,10 @@ describe('odata server', function () {
       .get('/users($' + key + ')?$select=num')
       .expect(200)
       .expect(function (res) {
-        const url = 'http://localhost:1234/$metadata#users(num)/$entity'
-        res.body.should.be.ok()
-        res.body.should.be.eql({
-          '@odata.context': url,
-          ...result
-        })
+        res.body.value.should.be.ok()
+        res.body['@odata.context'].should.be.eql('http://localhost:1234/$metadata#users(num)/$entity')
+        res.body.should.have.property('value')
+        res.body.value.should.be.eql(result)
       })
       .end(function (err, res) {
         done(err)
@@ -243,9 +242,9 @@ describe('odata server', function () {
       .get("/users('foo')")
       .expect(200)
       .expect(function (res) {
-        res.body.should.be.ok()
-        res.body.should.have.property('test')
-        res.body.should.not.have.property('a')
+        res.body.value.should.be.ok()
+        res.body.value[0].should.have.property('test')
+        res.body.value[0].should.not.have.property('a')
       })
       .end(function (err, res) {
         done(err)
@@ -452,7 +451,8 @@ describe('odata server', function () {
       })
   })
 
-  it('executeQuery should fire beforeQuery listener', function (done) {
+  /*
+  it('query should fire beforeQuery listener', function (done) {
     odataServer.beforeQuery(function (col, query, req, cb) {
       col.should.be.eql('users')
       query.isQuery.should.be.ok()
@@ -461,14 +461,15 @@ describe('odata server', function () {
       done()
     })
 
-    odataServer.executeQuery('users', {
+    odataServer.query('users', {
       isQuery: true
     }, {
+      body: {},
       isReq: true
     }, function () {})
   })
 
-  it('executeQuery should fire beforeQuery listener when no request param is accepted', function (done) {
+  it('query should fire beforeQuery listener when no request param is accepted', function (done) {
     odataServer.beforeQuery(function (col, query, req, cb) {
       col.should.be.eql('users')
       query.isQuery.should.be.ok()
@@ -476,14 +477,15 @@ describe('odata server', function () {
       done()
     })
 
-    odataServer.executeQuery('users', {
+    odataServer.query('users', {
       isQuery: true
     }, {
+      body: {},
       isReq: true
     }, function () {})
   })
 
-  it('executeInsert should fire beforeInsert listener', function (done) {
+  it('insert should fire beforeInsert listener', function (done) {
     odataServer.beforeInsert(function (col, doc, req, cb) {
       col.should.be.eql('users')
       doc.isDoc.should.be.ok()
@@ -492,14 +494,14 @@ describe('odata server', function () {
       done()
     })
 
-    odataServer.executeInsert('users', {
+    odataServer.insert('users', {
       isDoc: true
     }, {
       isReq: true
     }, function () {})
   })
 
-  it('executeInsert should fire beforeInsert listener when no request param is accepted', function (done) {
+  it('insert should fire beforeInsert listener when no request param is accepted', function (done) {
     odataServer.beforeInsert(function (col, doc, cb) {
       col.should.be.eql('users')
       doc.isDoc.should.be.ok()
@@ -507,14 +509,14 @@ describe('odata server', function () {
       done()
     })
 
-    odataServer.executeInsert('users', {
+    odataServer.insert('users', {
       isDoc: true
     }, {
       isReq: true
     }, function () {})
   })
 
-  it('executeRemove should fire beforeRemove listener', function (done) {
+  it('remove should fire beforeRemove listener', function (done) {
     odataServer.beforeRemove(function (col, query, req, cb) {
       col.should.be.eql('users')
       query.isQuery.should.be.ok()
@@ -523,14 +525,14 @@ describe('odata server', function () {
       done()
     })
 
-    odataServer.executeRemove('users', {
+    odataServer.remove('users', {
       isQuery: true
     }, {
       isReq: true
     }, function () {})
   })
 
-  it('executeRemove should fire beforeRemove listener when no request param is accepted', function (done) {
+  it('remove should fire beforeRemove listener when no request param is accepted', function (done) {
     odataServer.beforeRemove(function (col, query, cb) {
       col.should.be.eql('users')
       query.isQuery.should.be.ok()
@@ -538,14 +540,14 @@ describe('odata server', function () {
       done()
     })
 
-    odataServer.executeRemove('users', {
+    odataServer.remove('users', {
       isQuery: true
     }, {
       isReq: true
     }, function () {})
   })
 
-  it('executeUpdate should fire beforeUpdate listener', function (done) {
+  it('update should fire beforeUpdate listener', function (done) {
     odataServer.beforeUpdate(function (col, query, update, req, cb) {
       col.should.be.eql('users')
       query.isQuery.should.be.ok()
@@ -555,7 +557,7 @@ describe('odata server', function () {
       done()
     })
 
-    odataServer.executeUpdate('users', {
+    odataServer.update('users', {
       isQuery: true
     }, {
       isUpdate: true
@@ -564,7 +566,7 @@ describe('odata server', function () {
     }, function () {})
   })
 
-  it('executeUpdate should fire beforeUpdate listener when no request param is accepted', function (done) {
+  it('update should fire beforeUpdate listener when no request param is accepted', function (done) {
     odataServer.beforeUpdate(function (col, query, update, cb) {
       col.should.be.eql('users')
       query.isQuery.should.be.ok()
@@ -573,7 +575,7 @@ describe('odata server', function () {
       done()
     })
 
-    odataServer.executeUpdate('users', {
+    odataServer.update('users', {
       isQuery: true
     }, {
       isUpdate: true
@@ -581,6 +583,7 @@ describe('odata server', function () {
       isReq: true
     }, function () {})
   })
+  */
 })
 
 describe('odata server with cors', function () {

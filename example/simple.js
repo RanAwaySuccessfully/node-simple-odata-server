@@ -1,8 +1,14 @@
 const ODataServer = require('simple-odata-server')
-const Adapter = require('simple-odata-server-nedb')
+const Adapter = require('simple-odata-server-lowdb')
 const http = require('http')
-const Datastore = require('nedb')
-const db = new Datastore({ inMemoryOnly: true })
+const { Low, Memory } = require('lowdb')
+const memoryDB = new Memory()
+const db = new Low(memoryDB)
+
+if (!db.data) {
+  db.data = {}
+  db.write()
+}
 
 const model = {
   namespace: 'jsreport',

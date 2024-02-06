@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "simple-odata-server": "github:pofider/node-simple-odata-server",
-    "simple-odata-server-nedb": "github:pofider/node-simple-odata-server-nedb"
+    "simple-odata-server": "github:ranawaysuccessfully/node-simple-odata-server",
+    "simple-odata-server-lowdb": "github:ranawaysuccessfully/node-simple-odata-server-lowdb"
   }
 }

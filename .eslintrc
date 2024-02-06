@@ -1,10 +1,13 @@
 {
   "extends": "standard",
   "env": {
-      "node": true,
-      "mocha": true
+    "node": true,
+    "mocha": true
   },
   "globals": {
     "define": true
+  },
+  "parserOptions": {
+    "ecmaVersion": "latest"
   }
 }
