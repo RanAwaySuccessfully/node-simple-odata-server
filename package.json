@@ -21,7 +21,6 @@
   },
   "dependencies": {
     "@jsreport/odata-parser": "1.0.1",
-    "methods": "1.1.2",
     "path-to-regexp": "6.3.0",
     "safe-buffer": "5.2.1",
     "xmlbuilder": "15.1.1"
